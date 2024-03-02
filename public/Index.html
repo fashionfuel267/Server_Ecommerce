@@ -1,0 +1,98 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Website</title>
+</head>
+<body>
+    
+    <h1>Welcome to our E-Commerce Website</h1>
+    <div id="products"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.get('/products', function(data) {
+                console.log(data)
+                // var products = JSON.parse(data);
+                var products = data;
+                var productsHtml = '';
+                products.forEach(function(product) {
+                    productsHtml += '<div><h2>' + product.name + '</h2><p>' + product.description + '</p><p>Price: $' + product.price + '</p><button class="addToCart" >Add To cart</button></div>';
+                });
+                $('#products').html(productsHtml);
+            });
+        });
+    </script>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Website</title>
+</head>
+<body>
+    <h1>Welcome to our E-Commerce Website</h1>
+    <div id="products"></div>
+    <button id="clearCart">Clear Cart</button>
+    <h2>Shopping Cart</h2>
+    <div id="cart"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Load cart data from local storage
+            var cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+            // Display cart items
+            function displayCart() {
+                var cartHtml = '';
+                cart.forEach(function(item) {
+                    cartHtml += '<div><h3>' + item.name + '</h3><p>Price: $' + item.price + '</p></div>';
+                });
+                $('#cart').html(cartHtml);
+            }
+
+            displayCart();
+
+            // Load product data
+            $.get('/products', function(data) {
+                // var products = JSON.parse(data);
+                var products = data;
+                var productsHtml = '';
+                products.forEach(function(product) {
+                    productsHtml += '<div><h2>' + product.name + '</h2><p>' + product.description + '</p><p>Price: $' + product.price + '</p><button class="addToCart" data-name="' + product.name + '" data-price="' + product.price + '">Add to Cart</button></div>';
+                });
+                $('#products').html(productsHtml);
+
+                // Add to cart button click event
+                $('.addToCart').click(function() {
+                    var name = $(this).data('name');
+                    var price = $(this).data('price');
+                    var existingItem = cart.find(item => item.name === name);
+                    if (existingItem) {
+                        existingItem.quantity++;
+                    } else {
+                        cart.push({ name: name, price: price, quantity: 1 });
+                    }
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    console.log(cart)
+                    //displayCart();
+                });
+            });
+
+            // Clear cart button click event
+            $('#clearCart').click(function() {
+                cart = [];
+                localStorage.removeItem('cart');
+                displayCart();
+            });
+        });
+    </script>
+    
+</body>
+</html>
+
